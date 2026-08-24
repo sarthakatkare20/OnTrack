@@ -1,0 +1,1311 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OnTrack — AI-Powered Meeting Analysis & Work Management</title>
+  <meta name="description" content="OnTrack is an AI-powered meeting analysis and work-management platform that transforms live audio and recordings into actionable tasks." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #2d5a3f;
+      --primary-hover: #22442f;
+      --primary-light: rgba(45, 90, 63, 0.08);
+      --primary-glow: rgba(45, 90, 63, 0.16);
+      --text-main: #1c2520;
+      --text-muted: #738278;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      color: var(--text-main);
+    }
+
+    /* Auth Page Styles Preserved */
+    .page {
+      min-height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ambient-glow-1 {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      top: -100px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(200, 230, 210, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      filter: blur(50px);
+      animation: floatGlow 14s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .ambient-glow-2 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      bottom: -120px;
+      left: -60px;
+      background: radial-gradient(circle, rgba(235, 243, 225, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: floatGlow 18s ease-in-out infinite alternate-reverse;
+      pointer-events: none;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(25px, 20px) scale(1.08); }
+      100% { transform: translate(-15px, 35px) scale(0.95); }
+    }
+
+    /* Faded Branch Overlay */
+    .branch-bg {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.14;
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    /* Floating Leaves Micro-Animation */
+    .leaf-particle {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.25;
+      animation: floatLeaf 16s linear infinite;
+    }
+
+    .leaf-1 {
+      top: 15%;
+      left: 12%;
+      width: 24px;
+      animation-duration: 22s;
+      animation-delay: 0s;
+    }
+
+    .leaf-2 {
+      top: 65%;
+      right: 14%;
+      width: 20px;
+      animation-duration: 18s;
+      animation-delay: -5s;
+      transform: rotate(45deg);
+    }
+
+    .leaf-3 {
+      bottom: 18%;
+      left: 18%;
+      width: 28px;
+      animation-duration: 26s;
+      animation-delay: -10s;
+      transform: rotate(-30deg);
+    }
+
+    @keyframes floatLeaf {
+      0% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.2; }
+      50% { transform: translateY(-25px) rotate(15deg) scale(1.05); opacity: 0.35; }
+      100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.2; }
+    }
+
+    /* Login Card */
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 400px;
+      padding: 44px 38px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(45, 90, 63, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px -10px rgba(45, 90, 63, 0.08), 0 4px 16px rgba(0, 0, 0, 0.02);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      animation: cardAppear 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 16px 48px -8px rgba(45, 90, 63, 0.12), 0 6px 20px rgba(0, 0, 0, 0.03);
+      transform: translateY(-2px);
+    }
+
+    @keyframes cardAppear {
+      0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, rgba(45, 90, 63, 0.12), rgba(45, 90, 63, 0.04));
+      border-radius: 12px;
+      margin-bottom: 12px;
+      color: var(--primary);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .card:hover .logo-badge {
+      transform: rotate(10deg) scale(1.08);
+    }
+
+    .brand-name {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+
+    .brand-tagline {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s ease;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: #9ab0a2;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 1.5px solid #e2e8e4;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: rgba(250, 252, 251, 0.8);
+      outline: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-glow);
+      background: #ffffff;
+    }
+
+    input:focus+.input-icon,
+    .input-wrapper:focus-within .input-icon {
+      color: var(--primary);
+    }
+
+    .options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      margin-top: -2px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .forgot-link {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .forgot-link:hover {
+      color: var(--primary);
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 12.5px;
+      background: linear-gradient(135deg, #2d5a3f 0%, #1e3f2c 100%);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(45, 90, 63, 0.25);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(45, 90, 63, 0.35);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+      color: #b5c4ba;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e8eee9;
+    }
+
+    .toggle-prompt {
+      text-align: center;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-prompt a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      margin-left: 3px;
+    }
+
+    .notification {
+      padding: 11px 14px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      display: none;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .notification.success {
+      background: #edf7f1;
+      color: #1e6338;
+      border: 1px solid #ccebd7;
+    }
+
+    .notification.error {
+      background: #fdf2f2;
+      color: #a62a2a;
+      border: 1px solid #f8c8c8;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUTHENTICATION PAGE (PRESERVED) -->
+  <div class="page" id="auth-page">
+    <div class="ambient-glow-1" aria-hidden="true"></div>
+    <div class="ambient-glow-2" aria-hidden="true"></div>
+    <div class="branch-bg" aria-hidden="true"></div>
+
+    <svg class="leaf-particle leaf-1" viewBox="0 0 24 24" fill="none" stroke="#2d5a3f" stroke-width="1.5">
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 5.5 4.5 10 10 10 5.5 0 10-4.5 10-10C22 6.5 17.5 2 12 2zM12 22V12" />
+    </svg>
+    <svg class="leaf-particle leaf-2" viewBox="0 0 24 24" fill="none" stroke="#2d5a3f" stroke-width="1.5">
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 5.5 4.5 10 10 10 5.5 0 10-4.5 10-10C22 6.5 17.5 2 12 2zM12 22V12" />
+    </svg>
+    <svg class="leaf-particle leaf-3" viewBox="0 0 24 24" fill="none" stroke="#2d5a3f" stroke-width="1.5">
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 5.5 4.5 10 10 10 5.5 0 10-4.5 10-10C22 6.5 17.5 2 12 2zM12 22V12" />
+    </svg>
+
+    <main class="card" role="main">
+      <div class="brand">
+        <div class="logo-badge" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.18 2 8 0 5.5-4.7 10-10 10Z" />
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+          </svg>
+        </div>
+        <div class="brand-name">OnTrack</div>
+        <div class="brand-tagline" id="card-tagline">Stay focused | Stay relaxed | Stay on track.</div>
+      </div>
+
+      <div id="notification-box" class="notification"></div>
+
+      <form id="auth-form" novalidate>
+        <div class="form-group hidden" id="group-fullname">
+          <label for="fullname">Full Name</label>
+          <div class="input-wrapper">
+            <input type="text" id="fullname" name="fullname" placeholder="Alex Morgan" />
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-wrapper">
+            <input type="email" id="email" name="email" placeholder="you@example.com" value="alex.morgan@ontrack.ai" required />
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" name="password" placeholder="••••••••" value="password123" required />
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group hidden" id="group-confirm-password">
+          <label for="confirm-password">Confirm Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" />
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="options-row" id="options-row">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" name="remember" checked /> Remember me
+          </label>
+          <a href="#" class="forgot-link" id="forgot-password-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-action" id="submit-btn">Sign in to OnTrack</button>
+      </form>
+
+      <div class="divider">or</div>
+
+      <p class="toggle-prompt" id="toggle-prompt">
+        <span id="toggle-text">Don't have an account?</span>
+        <a id="toggle-btn">Create one</a>
+      </p>
+    </main>
+  </div>
+
+
+  <!-- MAIN ONTRACK APPLICATION SHELL (AFTER AUTH) -->
+  <div id="app-shell" style="display: none;">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.18 2 8 0 5.5-4.7 10-10 10Z" />
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+          </svg>
+        </div>
+        <span class="brand-title">OnTrack</span>
+        <span class="brand-version">v2.4 AI</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Core Workspace</div>
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item" data-view="meetings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Meetings
+          <span class="badge">3</span>
+        </a>
+
+        <div class="nav-section-label">AI Capture & Analysis</div>
+        <a href="#" class="nav-item" data-view="upload-audio">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          Upload Audio
+        </a>
+        <a href="#" class="nav-item" data-view="live-meeting">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.934a.5.5 0 0 0-.777-.416L16 11"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+          Live Meeting
+          <span class="badge" style="background:#fee2e2; color:#dc2626;">LIVE</span>
+        </a>
+        <a href="#" class="nav-item" data-view="analysis-results">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+          Transcripts
+        </a>
+        <a href="#" class="nav-item" data-view="mom">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          Summaries & MoM
+        </a>
+
+        <div class="nav-section-label">Work Management</div>
+        <a href="#" class="nav-item" data-view="tasks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          Tasks Tracker
+          <span class="badge" id="sidebar-tasks-count">5</span>
+        </a>
+        <a href="#" class="nav-item" data-view="calendar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Calendar / Scheduler
+        </a>
+        <a href="#" class="nav-item" data-view="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 1 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="upgrade-card">
+          <h4>OnTrack Pro Plan</h4>
+          <p>Unlimited AI speech processing & live meeting capture</p>
+          <button class="btn btn-primary btn-sm" style="width: 100%;">Active License</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="main-workspace">
+
+      <!-- TOPBAR HEADER -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          <div class="breadcrumbs">
+            <span>OnTrack</span>
+            <span>/</span>
+            <span class="current-page" id="breadcrumb-current">Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="global-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="global-search-input" placeholder="Search meetings, tasks, or transcripts..." />
+          </div>
+
+          <button class="icon-btn" id="notifications-btn" title="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="notification-badge"></span>
+          </button>
+
+          <!-- User Menu Trigger -->
+          <div class="user-menu-trigger" id="user-menu-trigger">
+            <div class="user-avatar user-avatar-display">A</div>
+            <div class="user-info">
+              <span class="user-name user-name-display">Alex Morgan</span>
+              <span class="user-role">Product Lead</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+
+          <!-- Dropdowns -->
+          <div class="dropdown-menu" id="user-menu-dropdown">
+            <div class="dropdown-header">
+              <h5 class="user-name-display">Alex Morgan</h5>
+              <p class="user-email-display">alex.morgan@ontrack.ai</p>
+            </div>
+            <a class="dropdown-item" id="open-edit-profile-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+              Edit Profile Name
+            </a>
+            <a class="dropdown-item" data-view="settings">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Account Preferences
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" id="logout-btn" style="color: #ef4444;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              Sign out
+            </a>
+          </div>
+
+          <div class="dropdown-menu" id="notifications-dropdown">
+            <div class="dropdown-header">
+              <h5>Notifications</h5>
+              <p>Recent updates & task assignments</p>
+            </div>
+            <div class="dropdown-item">
+              <div>
+                <div style="font-weight: 600; font-size: 0.8rem;">Task Assigned</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">David assigned "Deliver scheduler mockups"</div>
+              </div>
+            </div>
+            <div class="dropdown-item">
+              <div>
+                <div style="font-weight: 600; font-size: 0.8rem;">MoM Generated</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Q3 Product Roadmap summary is ready</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT CONTAINER (PAGE VIEWS) -->
+      <div class="content-container">
+
+        <!-- VIEW 1: DASHBOARD -->
+        <section class="page-view active-view" id="view-dashboard">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Welcome back, <span class="user-name-display">Alex</span> 👋</h1>
+              <p class="page-subtitle">Here is your meeting analysis and action items summary for today.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" data-view="upload-audio">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                Upload Audio
+              </button>
+              <button class="btn btn-primary" id="start-live-meeting-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.934a.5.5 0 0 0-.777-.416L16 11"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+                Start Live Meeting
+              </button>
+            </div>
+          </div>
+
+          <!-- Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-info">
+                <h6>Total Meetings</h6>
+                <div class="metric-value" id="metric-total-meetings">3</div>
+                <div class="metric-change positive">↑ 12% this week</div>
+              </div>
+              <div class="metric-icon">🎙️</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-info">
+                <h6>Pending Tasks</h6>
+                <div class="metric-value" id="metric-pending-tasks">4</div>
+                <div class="metric-change neutral">Requires attention</div>
+              </div>
+              <div class="metric-icon">⚡</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-info">
+                <h6>MoMs Generated</h6>
+                <div class="metric-value" id="metric-completed-mom">2</div>
+                <div class="metric-change positive">100% automated</div>
+              </div>
+              <div class="metric-icon">📑</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-info">
+                <h6>Hours Saved</h6>
+                <div class="metric-value">14.5</div>
+                <div class="metric-change positive">via AI synthesis</div>
+              </div>
+              <div class="metric-icon">⏱️</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions Grid -->
+          <div class="quick-actions-grid">
+            <div class="quick-action-btn" data-view="upload-audio">
+              <div class="quick-action-icon">📤</div>
+              <div class="quick-action-text">
+                <h4>Upload Audio Recording</h4>
+                <p>Drag & drop mp3/wav files for instant speech analysis</p>
+              </div>
+            </div>
+
+            <div class="quick-action-btn" data-view="live-meeting">
+              <div class="quick-action-icon">🔴</div>
+              <div class="quick-action-text">
+                <h4>Start Live Meeting</h4>
+                <p>Real-time speech recognition & live transcript</p>
+              </div>
+            </div>
+
+            <div class="quick-action-btn" data-view="calendar">
+              <div class="quick-action-icon">📅</div>
+              <div class="quick-action-text">
+                <h4>Schedule Meeting</h4>
+                <p>Book future syncs & set up meeting agendas</p>
+              </div>
+            </div>
+
+            <div class="quick-action-btn" data-view="tasks">
+              <div class="quick-action-icon">📋</div>
+              <div class="quick-action-text">
+                <h4>View Task Tracker</h4>
+                <p>Manage extracted action items and due dates</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Content Section -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            <div class="card-box">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Recent Meetings</h3>
+                <button class="btn btn-secondary btn-sm" data-view="meetings">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Date</th>
+                      <th>Duration</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-meetings-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+              <div class="card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                  <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">Pending Tasks</h3>
+                  <button class="btn btn-secondary btn-sm" data-view="tasks">Tracker →</button>
+                </div>
+                <div id="dashboard-pending-tasks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+              </div>
+
+              <div class="card-box">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 14px;">Upcoming Meetings</h3>
+                <div id="dashboard-upcoming-meetings" style="display: flex; flex-direction: column; gap: 10px;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 2: MEETINGS LIST -->
+        <section class="page-view" id="view-meetings">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Meeting Archives</h1>
+              <p class="page-subtitle">All captured live sessions and uploaded audio recordings.</p>
+            </div>
+            <button class="btn btn-primary" data-view="upload-audio">Upload New Recording</button>
+          </div>
+          <div id="meetings-list-container"></div>
+        </section>
+
+
+        <!-- VIEW 3: UPLOAD AUDIO (PHASE 1) -->
+        <section class="page-view" id="view-upload-audio">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Phase 1 — Audio-Based Meeting Analysis</h1>
+              <p class="page-subtitle">Upload your meeting recording to automatically generate speech-to-text transcripts, summaries, and action items.</p>
+            </div>
+          </div>
+
+          <div id="upload-dropzone-section" class="card-box" style="max-width: 760px; margin: 0 auto;">
+            <div class="upload-dropzone" id="upload-dropzone">
+              <div class="dropzone-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              </div>
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Drag and drop your audio file here</h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 16px;">Supports MP3, WAV, M4A, AAC files up to 250MB</p>
+              <button class="btn btn-secondary">Browse Files</button>
+              <input type="file" id="audio-file-input" accept="audio/*" style="display: none;" />
+            </div>
+
+            <!-- File Details Box -->
+            <div id="selected-file-info" style="display: none; margin-top: 20px; padding: 16px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="font-size: 1.5rem;">🎵</div>
+                  <div>
+                    <div id="file-name-display" style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">recording.mp3</div>
+                    <div id="file-size-display" style="font-size: 0.76rem; color: var(--text-muted);">14.2 MB • audio/mp3</div>
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="remove-file-btn">Remove</button>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: right;">
+              <button class="btn btn-primary btn-lg" id="start-analysis-btn" disabled>Start AI Analysis →</button>
+            </div>
+          </div>
+
+          <!-- Processing Progress Interface -->
+          <div id="processing-pipeline-container" class="card-box" style="display: none; max-width: 760px; margin: 0 auto; text-align: center; padding: 40px 24px;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px; animation: pulseDot 1s infinite alternate;">🧠</div>
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Analyzing Meeting Audio</h3>
+            <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 24px;" id="processing-status-text">Uploading Audio Recording...</p>
+
+            <div class="stepper-container">
+              <div class="stepper-progress-bar" id="stepper-progress-bar" style="width: 20%;"></div>
+              <div class="step-item active" id="step-item-1"><div class="step-circle">1</div><div class="step-label">Uploading</div></div>
+              <div class="step-item" id="step-item-2"><div class="step-circle">2</div><div class="step-label">Processing</div></div>
+              <div class="step-item" id="step-item-3"><div class="step-circle">3</div><div class="step-label">Speech to Text</div></div>
+              <div class="step-item" id="step-item-4"><div class="step-circle">4</div><div class="step-label">Transcript</div></div>
+              <div class="step-item" id="step-item-5"><div class="step-circle">5</div><div class="step-label">Summary</div></div>
+              <div class="step-item" id="step-item-6"><div class="step-circle">6</div><div class="step-label">Complete</div></div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 4: MEETING ANALYSIS RESULTS & SPEAKER ID -->
+        <section class="page-view" id="view-analysis-results">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title" id="analysis-title">Meeting Analysis Results</h1>
+              <p class="page-subtitle" id="analysis-meta">Q3 Product Roadmap Sync • 45 mins • 4 Participants</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" onclick="window.OnTrack.navigateTo('mom')">View MoM Document</button>
+              <button class="btn btn-primary" onclick="window.OnTrack.navigateTo('tasks')">View Extracted Tasks</button>
+            </div>
+          </div>
+
+          <!-- Summary Section -->
+          <div id="analysis-summary-box"></div>
+
+          <!-- Audio Player Waveform Widget -->
+          <div id="audio-player-container"></div>
+
+          <!-- Transcript & Speaker ID Section -->
+          <div class="card-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Full Transcript & Speaker Identification</h3>
+                <p style="font-size: 0.78rem; color: var(--text-muted);">Visual speaker diarization tags and searchable audio timestamps.</p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="transcript-search-input" placeholder="Search transcript..." style="padding: 6.5px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8rem; width: 190px;" />
+                <button class="btn btn-secondary btn-sm" id="copy-transcript-btn">Copy</button>
+                <button class="btn btn-outline btn-sm" id="download-transcript-btn">Download .txt</button>
+              </div>
+            </div>
+
+            <!-- Speaker Identification Interactive Legend -->
+            <div id="speaker-legend-container" style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;"></div>
+
+            <div class="transcript-box" id="transcript-lines-box"></div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 5: LIVE MEETING CAPTURE (PHASE 2 & PHASE 4) -->
+        <section class="page-view" id="view-live-meeting">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Phase 2 & 4 — Live Meeting Platform</h1>
+              <p class="page-subtitle">Real-time speech recognition, active recording, and streaming live transcript.</p>
+            </div>
+            <button class="btn btn-danger" id="end-live-meeting-btn">End Meeting & Generate MoM</button>
+          </div>
+
+          <div class="live-meeting-layout">
+            <!-- Video Stage -->
+            <div class="video-stage">
+              <div class="stage-header">
+                <div style="font-weight: 700; font-size: 1rem;">Q3 Engineering Architecture & Live Sync</div>
+                <div class="recording-indicator">
+                  <span class="recording-pulse"></span>
+                  RECORDING LIVE
+                </div>
+              </div>
+
+              <!-- Participant Tiles -->
+              <div class="video-grid">
+                <div class="participant-avatar-tile">
+                  <div class="avatar">AM</div>
+                  <div style="font-weight: 600; font-size: 0.88rem;">Alex Morgan (You)</div>
+                </div>
+                <div class="participant-avatar-tile">
+                  <div class="avatar" style="background:#2563eb;">SC</div>
+                  <div style="font-weight: 600; font-size: 0.88rem;">Sarah Chen</div>
+                </div>
+                <div class="participant-avatar-tile">
+                  <div class="avatar" style="background:#d97706;">DM</div>
+                  <div style="font-weight: 600; font-size: 0.88rem;">David Miller</div>
+                </div>
+              </div>
+
+              <!-- Stage Controls -->
+              <div class="stage-controls">
+                <button class="control-btn" id="toggle-mic-btn" title="Toggle Mic">🎤</button>
+                <button class="control-btn" id="toggle-cam-btn" title="Toggle Camera">📹</button>
+                <button class="control-btn" title="Share Screen">🖥️</button>
+                <button class="control-btn leave-btn" id="leave-stage-btn" onclick="window.OnTrack.navigateTo('dashboard')" title="Leave">📞</button>
+              </div>
+            </div>
+
+            <!-- Live Speech Stream Panel -->
+            <div class="live-transcript-panel">
+              <div class="panel-header">
+                <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Live Transcription</div>
+                <span class="badge-status in-progress">Streaming</span>
+              </div>
+              <div class="live-stream-box" id="live-stream-box"></div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 6: MINUTES OF MEETING (MoM) -->
+        <section class="page-view" id="view-mom">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Minutes of Meeting (MoM)</h1>
+              <p class="page-subtitle">Automatically generated executive business summary and action item document.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" onclick="window.OnTrack.copyMoMText()">Copy</button>
+              <button class="btn btn-primary" onclick="window.OnTrack.downloadMoMDoc('mtg-101')">Download Document</button>
+            </div>
+          </div>
+
+          <div id="mom-document-container"></div>
+        </section>
+
+
+        <!-- VIEW 7: TASK TRACKER (PHASE 3) -->
+        <section class="page-view" id="view-tasks">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Phase 3 — Task & Work Management</h1>
+              <p class="page-subtitle">Track, filter, and manage action items directly extracted from meetings.</p>
+            </div>
+            <button class="btn btn-primary" id="add-task-btn">+ Add Custom Task</button>
+          </div>
+
+          <!-- Task Filters Bar -->
+          <div class="task-filters">
+            <div class="task-filter-group">
+              <label style="font-size: 0.76rem; font-weight: 600; color: var(--text-muted);">Priority:</label>
+              <select id="task-priority-filter" style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.82rem;">
+                <option value="all">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            <div style="font-size: 0.84rem; color: var(--text-muted);">
+              Connected Flow: <strong>Meeting → MoM → Tasks → Work Tracking</strong>
+            </div>
+          </div>
+
+          <!-- Task Board -->
+          <div class="task-board">
+            <div class="task-column">
+              <div class="task-column-header">
+                <h4>To Do</h4>
+                <span class="badge" id="count-todo">0</span>
+              </div>
+              <div id="col-todo-tasks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+
+            <div class="task-column">
+              <div class="task-column-header">
+                <h4>In Progress</h4>
+                <span class="badge" id="count-progress">0</span>
+              </div>
+              <div id="col-progress-tasks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+
+            <div class="task-column">
+              <div class="task-column-header">
+                <h4>Completed</h4>
+                <span class="badge" id="count-completed">0</span>
+              </div>
+              <div id="col-completed-tasks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 8: CALENDAR / SCHEDULER -->
+        <section class="page-view" id="view-calendar">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Meeting Scheduler & Calendar</h1>
+              <p class="page-subtitle">View past meetings, upcoming syncs, and schedule new sessions.</p>
+            </div>
+            <button class="btn btn-primary" id="schedule-meeting-btn">+ Schedule Meeting</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">August 2026</h3>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Current Workspace Schedule</div>
+              </div>
+
+              <div class="calendar-grid">
+                <div class="calendar-day-head">Sun</div>
+                <div class="calendar-day-head">Mon</div>
+                <div class="calendar-day-head">Tue</div>
+                <div class="calendar-day-head">Wed</div>
+                <div class="calendar-day-head">Thu</div>
+                <div class="calendar-day-head">Fri</div>
+                <div class="calendar-day-head">Sat</div>
+              </div>
+              <div class="calendar-grid" id="calendar-grid-cells"></div>
+            </div>
+
+            <div class="card-box">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 16px;">Upcoming Meetings</h3>
+              <div id="calendar-upcoming-list"></div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 9: SETTINGS -->
+        <section class="page-view" id="view-settings">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Platform Settings</h1>
+              <p class="page-subtitle">Configure AI model parameters, speech recognition options, and profile preferences.</p>
+            </div>
+          </div>
+
+          <div class="card-box" style="max-width: 680px; margin-bottom: 24px;">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px;">👤 User Profile Settings</h3>
+            <form id="profile-settings-form">
+              <div class="form-field">
+                <label>Full Name</label>
+                <input type="text" id="settings-fullname" placeholder="Alex Morgan" required />
+              </div>
+              <div class="form-field">
+                <label>Email Address</label>
+                <input type="email" id="settings-email" placeholder="alex.morgan@ontrack.ai" required />
+              </div>
+              <div class="form-field">
+                <label>Role / Job Title</label>
+                <input type="text" id="settings-role" placeholder="Product Lead" />
+              </div>
+              <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+            </form>
+          </div>
+
+          <div class="card-box" style="max-width: 680px;">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px;">AI Speech & Summarization Settings</h3>
+
+            <div class="form-field">
+              <label>Default AI Model</label>
+              <select>
+                <option selected>OnTrack Neural Audio v2.4 (Fast & High Accuracy)</option>
+                <option>OnTrack DeepTranscript Pro (Maximum Diarization Detail)</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Speaker Diarization Sensitivity</label>
+              <select>
+                <option selected>High (Recommended for multi-speaker meetings)</option>
+                <option>Medium</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Automatic Task Extraction</label>
+              <select>
+                <option selected>Auto-extract action items to Task Tracker</option>
+                <option>Manual approval before task creation</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="window.OnTrack.navigateTo('dashboard')">Save Settings</button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" id="task-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New Action Item</h3>
+        <button class="close-btn" id="close-task-modal-btn">✕</button>
+      </div>
+      <form id="task-modal-form">
+        <div class="form-field">
+          <label>Task Title</label>
+          <input type="text" id="task-form-title" placeholder="e.g. Deliver API specification document" required />
+        </div>
+        <div class="form-field">
+          <label>Description</label>
+          <textarea id="task-form-desc" rows="3" placeholder="Provide background context..."></textarea>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label>Assignee</label>
+            <input type="text" id="task-form-assignee" placeholder="Alex Morgan" />
+          </div>
+          <div class="form-field">
+            <label>Due Date</label>
+            <input type="date" id="task-form-duedate" value="2026-08-25" />
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label>Priority</label>
+            <select id="task-form-priority">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Status</label>
+            <select id="task-form-status">
+              <option value="To Do" selected>To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="cancel-task-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Schedule Meeting Modal -->
+  <div class="modal-overlay" id="schedule-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Schedule New Meeting</h3>
+        <button class="close-btn" id="close-schedule-modal-btn">✕</button>
+      </div>
+      <form id="schedule-modal-form">
+        <div class="form-field">
+          <label>Meeting Title</label>
+          <input type="text" id="sch-title" placeholder="e.g. Design System Review" required />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label>Date</label>
+            <input type="date" id="sch-date" value="2026-08-24" required />
+          </div>
+          <div class="form-field">
+            <label>Time</label>
+            <input type="time" id="sch-time" value="10:00" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Participants (Emails)</label>
+          <input type="text" id="sch-participants" placeholder="sarah@ontrack.ai, david@ontrack.ai" />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="cancel-sch-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  <!-- Edit Profile Modal -->
+  <div class="modal-overlay" id="edit-profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit User Profile Name</h3>
+        <button class="close-btn" id="close-profile-modal-btn">✕</button>
+      </div>
+      <form id="modal-edit-profile-form">
+        <div class="form-field">
+          <label>Full Name</label>
+          <input type="text" id="modal-fullname-input" placeholder="e.g. Alex Morgan" required />
+        </div>
+        <div class="form-field">
+          <label>Email Address</label>
+          <input type="email" id="modal-email-input" placeholder="e.g. alex.morgan@ontrack.ai" required />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" id="cancel-profile-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION OVERLAY -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- APPLICATION JAVASCRIPT -->
+  <script src="js/app.js"></script>
+
+  <!-- EXISTING LOGIN FORM INTERCEPT SCRIPT -->
+  <script>
+    let mode = 'signin';
+
+    const authForm = document.getElementById('auth-form');
+    const groupFullname = document.getElementById('group-fullname');
+    const groupConfirmPassword = document.getElementById('group-confirm-password');
+    const optionsRow = document.getElementById('options-row');
+    const submitBtn = document.getElementById('submit-btn');
+    const togglePromptText = document.getElementById('toggle-text');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const cardTagline = document.getElementById('card-tagline');
+    const notificationBox = document.getElementById('notification-box');
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const fullnameInput = document.getElementById('fullname');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+
+    function showNotification(msg, type = 'success') {
+      notificationBox.textContent = msg;
+      notificationBox.className = `notification ${type}`;
+      notificationBox.style.display = 'block';
+    }
+
+    function hideNotification() {
+      notificationBox.style.display = 'none';
+      notificationBox.textContent = '';
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      hideNotification();
+
+      if (mode === 'signup') {
+        groupFullname.classList.remove('hidden');
+        groupConfirmPassword.classList.remove('hidden');
+        optionsRow.classList.add('hidden');
+        submitBtn.textContent = 'Create Account';
+        togglePromptText.textContent = 'Already have an account?';
+        toggleBtn.textContent = 'Sign in';
+        cardTagline.textContent = 'Create your account to get started.';
+      } else {
+        groupFullname.classList.add('hidden');
+        groupConfirmPassword.classList.add('hidden');
+        optionsRow.classList.remove('hidden');
+        submitBtn.textContent = 'Sign in to OnTrack';
+        togglePromptText.textContent = "Don't have an account?";
+        toggleBtn.textContent = 'Create one';
+        cardTagline.textContent = 'Stay focused. Stay on track.';
+      }
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        setMode(mode === 'signin' ? 'signup' : 'signin');
+      });
+    }
+
+    if (authForm) {
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!email || !password) {
+          showNotification('Please fill in all required fields.', 'error');
+          return;
+        }
+
+        const fullname = (fullnameInput && fullnameInput.value.trim()) || 'Alex Morgan';
+        const userObj = { email, fullname };
+        localStorage.setItem('ontrack_active_user', JSON.stringify(userObj));
+
+        showNotification('Signed in successfully! Transitioning to dashboard...', 'success');
+
+        setTimeout(() => {
+          if (window.OnTrack && window.OnTrack.loginUser) {
+            window.OnTrack.loginUser(userObj);
+          } else {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('app-shell').style.display = 'flex';
+          }
+        }, 500);
+      });
+    }
+  </script>
+</body>
+
+</html>
